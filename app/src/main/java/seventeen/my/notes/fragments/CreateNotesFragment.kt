@@ -29,6 +29,7 @@ import seventeen.my.notes.R
 import seventeen.my.notes.db.DatabaseHandler
 import seventeen.my.notes.model.Notes
 import seventeen.my.notes.utils.NoteBottomSheetFragment
+import seventeen.my.notes.utils.UtilsString.Companion.email
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -52,8 +53,6 @@ class CreateNotesFragment : Fragment(),EasyPermissions.PermissionCallbacks,EasyP
         super.onCreate(savedInstanceState)
 
         noteId = arguments?.getInt("noteId") ?: -1
-
-        Log.i("test----", "noteId---->$noteId")
     }
 
     override fun onCreateView(
@@ -120,7 +119,7 @@ class CreateNotesFragment : Fragment(),EasyPermissions.PermissionCallbacks,EasyP
         }
 
         imgBack.setOnClickListener {
-//            requireActivity().supportFragmentManager.popBackStack()
+
             navController.navigate(R.id.action_createNotesFragment_to_homeFragment)
 
         }
@@ -133,6 +132,7 @@ class CreateNotesFragment : Fragment(),EasyPermissions.PermissionCallbacks,EasyP
                 "Note Bottom Sheet Fragment"
             )
         }
+
 
         imgDelete.setOnClickListener {
             selectedImagePath = ""
@@ -325,7 +325,7 @@ class CreateNotesFragment : Fragment(),EasyPermissions.PermissionCallbacks,EasyP
                 notes.webLink = webLink
 
                 val db = DatabaseHandler(requireContext())
-                db.addNote(notes)
+                db.addNote(notes, email)
                 db.close()
 
                 Toast.makeText(context, "Note Added", Toast.LENGTH_SHORT).show()
@@ -341,7 +341,6 @@ class CreateNotesFragment : Fragment(),EasyPermissions.PermissionCallbacks,EasyP
                 imgNote.visibility = View.GONE
                 tvWebLink.visibility = View.GONE
 
-//                        requireActivity().supportFragmentManager.popBackStack()
             }
         }
     }

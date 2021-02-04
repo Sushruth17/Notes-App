@@ -1,6 +1,9 @@
 package seventeen.my.notes.fragments
 
+import android.net.Uri
 import android.os.Bundle
+import android.os.Parcelable
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,9 +12,9 @@ import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
-import androidx.navigation.findNavController
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import kotlinx.android.synthetic.main.fragment_home.*
@@ -19,6 +22,7 @@ import seventeen.my.notes.R
 import seventeen.my.notes.adapter.NotesAdapter
 import seventeen.my.notes.db.DatabaseHandler
 import seventeen.my.notes.model.Notes
+import seventeen.my.notes.utils.UtilsString.Companion.email
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -29,15 +33,25 @@ class HomeFragment : Fragment() {
     var notesArray = ArrayList<Notes>()
     var notesAdapter: NotesAdapter = NotesAdapter()
     lateinit var navController: NavController
+    private lateinit var acct: GoogleSignInAccount
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        acct = GoogleSignIn.getLastSignedInAccount(activity)!!
+        email = acct.email
+        val personName = acct.displayName
+        val personGivenName = acct.givenName
+        val personFamilyName = acct.familyName
+        val personEmail = acct.email
+        val personId = acct.id
+        val personPhoto: Uri? = acct.photoUrl
+        Log.i("google--", "email--->" + acct.email)
 
     }
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+            inflater: LayoutInflater, container: ViewGroup?,
+            savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_home, container, false)
@@ -56,7 +70,7 @@ class HomeFragment : Fragment() {
 
         recycler_view.setHasFixedSize(true)
         recycler_view.layoutManager = StaggeredGridLayoutManager(
-            2, StaggeredGridLayoutManager.VERTICAL
+                2, StaggeredGridLayoutManager.VERTICAL
         )
         notesAdapter.setOnClickListener(onClicked)
 
@@ -102,20 +116,13 @@ class HomeFragment : Fragment() {
             val bundle = bundleOf("noteId" to noteId)
             navController.navigate(R.id.action_homeFragment_to_createNotesFragment, bundle)
 
-        /*    val fragment :Fragment
-            val bundle = Bundle()
-            bundle.putInt("noteId",noteId)
-            fragment = CreateNoteFragment.newInstance()
-            fragment.arguments = bundle*/
-//            view.findNavController().navigate(R.id.action_homeFragment_to_createNotesFragment)
-
         }
 
     }
 
     private fun loadNotes() {
         val db = DatabaseHandler(requireContext())
-        notesArray = db.allNotes
+        notesArray = db.allNotes(email)
         if (notesArray.size != 0) {
             notesAdapter.setData(notesArray)
             recycler_view.adapter = notesAdapter

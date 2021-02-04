@@ -23,8 +23,6 @@ class LoginFragment : Fragment() {
 
     lateinit var mGoogleSignInClient: GoogleSignInClient
     val RC_SIGN_IN:Int=123
-//    var firebaseAuth= FirebaseAuth.getInstance()
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,8 +32,8 @@ class LoginFragment : Fragment() {
     }
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+            inflater: LayoutInflater, container: ViewGroup?,
+            savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_login, container, false)

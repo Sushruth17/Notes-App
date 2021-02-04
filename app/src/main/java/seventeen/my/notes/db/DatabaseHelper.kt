@@ -21,7 +21,8 @@ class DatabaseHandler(context: Context?) :
                 + KEY_NOTE + " TEXT" + ", "
                 + KEY_IMG_PATH + " TEXT" + ", "
                 + KEY_WEB_URL + " TEXT" + ", "
-                + KEY_COLOR + " TEXT"
+                + KEY_COLOR + " TEXT" + ", "
+                + KEY_EMAIL + " TEXT"
                 + ")")
         Log.d(TAG, CREATE_NOTES_TABLE)
         db.execSQL(CREATE_NOTES_TABLE)
@@ -35,7 +36,7 @@ class DatabaseHandler(context: Context?) :
     }
 
     //CRUD OPERATIONS
-    fun addNote(note: Notes) {
+    fun addNote(note: Notes, email: String?) {
         val db = this.writableDatabase
         val values = ContentValues()
         values.put(KEY_TITLE, note.title)
@@ -45,6 +46,7 @@ class DatabaseHandler(context: Context?) :
         values.put(KEY_IMG_PATH, note.imgPath)
         values.put(KEY_WEB_URL, note.webLink)
         values.put(KEY_COLOR, note.color)
+        values.put(KEY_EMAIL, email)
         db.insert(TABLE_NAME, null, values)
         db.close()
     }
@@ -79,8 +81,7 @@ class DatabaseHandler(context: Context?) :
             null,
             null,
             null,
-            null
-        )
+            null )
         c?.moveToFirst()
         db.close()
         Log.d(
@@ -100,12 +101,11 @@ class DatabaseHandler(context: Context?) :
             c?.getString(7))
     }
 
-    val allNotes: ArrayList<Notes>
-        get() {
+    fun allNotes(email: String?): ArrayList<Notes>{
             val db = this.readableDatabase
             val noteList: ArrayList<Notes> = ArrayList()
             val cursor: Cursor? =
-                db.query(TABLE_NAME, COLS_ID_TITLE_NOTE, null, null, null, null, null)
+                db.query(TABLE_NAME, COLS_ID_TITLE_NOTE, "$KEY_EMAIL=?", arrayOf(email), null, null, null)
             if (cursor != null && cursor.moveToFirst()) {
                 do {
                     val note = Notes()
@@ -140,11 +140,12 @@ class DatabaseHandler(context: Context?) :
         private const val KEY_IMG_PATH = "imgPath"
         private const val KEY_WEB_URL = "webUrl"
         private const val KEY_COLOR = "color"
+        private const val KEY_EMAIL = "email"
 
 
         // Coloumn Combinations
         private val COLS_ID_TITLE_NOTE = arrayOf(KEY_ID, KEY_TITLE, KEY_SUB_TITLE,
                                                 KEY_DATE_TIME, KEY_NOTE, KEY_IMG_PATH,
-                                                KEY_WEB_URL, KEY_COLOR)
+                                                KEY_WEB_URL, KEY_COLOR, KEY_EMAIL)
     }
 }
